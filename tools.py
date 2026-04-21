@@ -11,21 +11,36 @@ from langchain_core.prompts import PromptTemplate
 from typing import TypedDict, Optional
 from pydantic import BaseModel, Field
 
-load_dotenv()
 
-llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
+
+#---------------------------------------PYDANTIC SCHEMA-----------------------------------------------------------------------
+
+# INPUT VALIDATION
+class LeadData(BaseModel):
+    user_name: str = Field(..., description="Name of the user")
+    email: str = Field(..., description="Email of the user")
+    platform: str = Field(..., description="Platform of the user like Youtube, Instagram, etc.")
+ 
+
+# OUTPUT VALIDATION
+class LeadResponse(BaseModel):
+    status: str
+    message: str
+    data: LeadData
+    
+#----------------------------------------------------------------------------------------------------------
+
 
 @tool
-async def mock_lead_capture(company_name: str, amount_paid: float, 
-                         product_name: str, num_units: int) -> dict:
+async def mock_lead_capture(user_name: str, email: str, 
+                         platform: str) -> LeadResponse:
     """Mock tool to capture lead information."""
-    return {
-        "status": "success",
-        "message": f"Lead captured successfully for {company_name}",
-        "data": {
-            "company_name": company_name,
-            "amount_paid": amount_paid,
-            "product_name": product_name,
-            "num_units": num_units
-        }
-    }
+    return LeadResponse(
+        status="success",
+        message=f"Lead captured successfully for {user_name}",
+        data=LeadData(
+            user_name=user_name,
+            email=email,
+            platform=platform
+        )
+    )
