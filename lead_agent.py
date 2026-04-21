@@ -17,3 +17,17 @@ from langchain_core.messages import ToolMessage
 
 
 load_dotenv()
+
+# -----------------------------------STATE SCHEMA-------------------------------------------
+class AgentState(TypedDict):
+    
+    # Conversation History
+    messages: Annotated[list[AnyMessage], add_messages]
+    
+
+#--------------------------------------------------------------------------------------------
+
+
+# Initialise the LLM
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
+
