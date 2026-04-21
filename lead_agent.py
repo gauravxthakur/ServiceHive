@@ -14,7 +14,7 @@ from langgraph.checkpoint.redis.aio import AsyncRedisSaver
 from langgraph.types import interrupt # For HITL
 from langgraph.types import Command
 from langchain_core.messages import ToolMessage
-
+from tools import mock_lead_capture
 
 load_dotenv()
 
@@ -30,6 +30,12 @@ class AgentState(TypedDict):
 
 # Initialise the LLM
 llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
+
+
+#-------------------------------------TOOLS------------------------------------------------------------------------------------------------------
+local_tools = [
+    mock_lead_capture
+]
 
 
 # System Message
@@ -65,3 +71,40 @@ Examples:
 - "Show me your refund policy." → Intent: inquiry → retrieve_knowledge()
 """)
 
+
+
+#-------------------------------------BUILD THE GRAPH--------------------------------------------------------------------------------------------------------
+
+async def build_graph():
+    # Create the graph
+    graph = StateGraph(AgentState)
+    
+    llm_with_tools = llm.bind_tools(local_tools)
+    
+    
+    #----------------------------------AI AGENT--------------------------------------------------------------------------
+    
+    async def agent(state: AgentState) -> AgentState:
+        response = await llm_with_tools.ainvoke([sys_msg] + state["messages"])
+        return {"messages": [response]}
+    #------------------------------------------------------------------------------------------------------------------------
+    
+    
+    # NODES
+    graph.add_node("agent", agent)
+    graph.add_node("tools", ToolNode(local_tools))
+    
+    # EDGES
+    graph.add_edge(START, "agent")
+    graph.add_conditional_edges(
+        "agent",
+        tools_condition,
+        {
+            "tools": "tools",
+            "__end__": END
+        }
+    )
+    graph.add_edge("tools", "agent")
+    
+    # Compile
+    return graph.compile()
