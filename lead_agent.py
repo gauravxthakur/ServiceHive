@@ -113,9 +113,17 @@ async def build_graph():
 
 async def chat_interface():
     """Simple terminal chat interface for the lead agent"""
-    
-    print("AutoStream Lead Agent")
-    print("Type 'quit' or 'exit' to end the conversation\n")
+
+    print(f"""                                                                                                                                                        
+▄████▄ ██  ██ ██████ ▄████▄ ▄█████ ██████ █████▄  ██████ ▄████▄ ██▄  ▄██ 
+██▄▄██ ██  ██   ██   ██  ██ ▀▀▀▄▄▄   ██   ██▄▄██▄ ██▄▄   ██▄▄██ ██ ▀▀ ██ 
+██  ██ ▀████▀   ██   ▀████▀ █████▀   ██   ██   ██ ██▄▄▄▄ ██  ██ ██    ██ 
+                                                            
+▄▄    ▄▄▄▄▄  ▄▄▄  ▄▄▄▄       ▄▄▄   ▄▄▄▄ ▄▄▄▄▄ ▄▄  ▄▄ ▄▄▄▄▄▄ 
+██    ██▄▄  ██▀██ ██▀██     ██▀██ ██ ▄▄ ██▄▄  ███▄██   ██   
+██▄▄▄ ██▄▄▄ ██▀██ ████▀     ██▀██ ▀███▀ ██▄▄▄ ██ ▀██   ██                                                                                             
+          """)
+    print("TYPE 'quit' OR 'exit' TO END THE CONVERSATION\n")
     
     # Build the graph
     graph = await build_graph()
