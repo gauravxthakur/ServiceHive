@@ -10,7 +10,6 @@ from langgraph.graph.message import add_messages
 from langchain_core.prompts import PromptTemplate
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import ToolNode, tools_condition
-from langgraph.checkpoint.redis.aio import AsyncRedisSaver
 from langgraph.types import interrupt # For HITL
 from langgraph.types import Command
 from langchain_core.messages import ToolMessage
@@ -108,3 +107,56 @@ async def build_graph():
     
     # Compile
     return graph.compile()
+
+
+
+#-------------------------------------CHAT INTERFACE--------------------------------------------------------------------------------------------------------
+
+async def chat_interface():
+    """Simple terminal chat interface for the lead agent"""
+    
+    print("AutoStream Lead Agent")
+    print("Type 'quit' or 'exit' to end the conversation\n")
+    
+    # Build the graph
+    graph = await build_graph()
+    
+    # Initialize conversation state
+    config = {"configurable": {"thread_id": "chat_session_1"}}
+    state = {"messages": []}
+    
+    while True:
+        # Get user input
+        user_input = input("You: ").strip()
+        
+        if user_input.lower() in ['quit', 'exit']:
+            print("Goodbye!")
+            break
+        
+        if not user_input:
+            continue
+        
+        try:
+            # Add user message to state
+            state["messages"].append(HumanMessage(content=user_input))
+            
+            # Run the agent
+            result = await graph.ainvoke(state, config)
+            
+            # Extract and display the assistant's response
+            if result["messages"]:
+                last_message = result["messages"][-1]
+                print(f"Agent: {last_message.content}")
+                
+                # Update state with result
+                state = result
+            else:
+                print("Agent: I'm sorry, I couldn't process that.")
+                
+        except Exception as e:
+            print(f"Error: {e}")
+            print("Agent: I encountered an error. Please try again.")
+
+
+if __name__ == "__main__":
+    asyncio.run(chat_interface())
