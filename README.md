@@ -1,3 +1,6 @@
+https://github.com/user-attachments/assets/b5241b1c-1897-4fb3-9b1e-74fcb9c277a5
+
+
 # Social-to-Lead Agent
 
 A conversational AI agent for AutoStream that converts social media conversations into qualified business leads using LangGraph and RAG.
