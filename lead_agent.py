@@ -146,7 +146,17 @@ async def chat_interface():
             # Extract and display the assistant's response
             if result["messages"]:
                 last_message = result["messages"][-1]
-                print(f"Agent: {last_message.content}")
+                
+                # Extract text content
+                content = last_message.content
+                if isinstance(content, list):
+                    text = content[0].get('text', str(content[0]))
+                elif isinstance(content, dict):
+                    text = content.get('text', str(content))
+                else:
+                    text = str(content)
+                
+                print(f"Agent: {text}")
                 
                 # Update state with result
                 state = result
