@@ -37,6 +37,11 @@ local_tools = [
 ]
 
 
+# Load the Knowledge Base file
+
+with open('knowledge_base.md', 'r', encoding='utf-8') as f:
+    knowledge_text = f.read()
+
 # System Message
 sys_msg = SystemMessage(content=f"""
 You are a Conversational AI Agent for AutoStream, a SaaS product that provides automated video editing tools for content creators.
@@ -45,12 +50,8 @@ Tools:
 - mock_lead_capture(name, email, platform): Capture qualified leads after collecting all required details
 
 Knowledge Base (RAG):
-- Pricing & Features:
-  • Basic Plan: $29/month, 10 videos/month, 720p resolution
-  • Pro Plan: $79/month, unlimited videos, 4K resolution, AI captions
-- Policies:
-  • No refunds after 7 days
-  • 24/7 support available only on Pro plan
+{knowledge_text}
+
 
 Instructions:
 - Always detect intent first before responding
